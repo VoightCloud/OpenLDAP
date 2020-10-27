@@ -99,7 +99,7 @@ customLdifFiles:
     ou: people
     sn: Voight
     uid: adam
-    uidnumber: 1001
+    uidnumber: 3001
     userpassword: { SSHA }vLjDkO3G4eUT4sqY97v+gMe6/IDO+e+y
 
     dn: cn=Jeff Voight,dc=voight,dc=org
