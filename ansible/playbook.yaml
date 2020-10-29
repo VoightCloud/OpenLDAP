@@ -1,0 +1,28 @@
+# You would run this on the Kubernetes Control Plane
+# Important: Run this first!
+
+- name: Install OpenLDAP
+  hosts: controlplane
+  vars_files:
+    - files/openldap-vault.yaml
+
+  tasks:
+    - name: Install Stable repos
+      community.kubernetes.helm_repository:
+        name: stable
+        repo_url: "https://kubernetes-charts.storage.googleapis.com"
+
+    - name: Update helm repos
+      command: helm repo update
+
+    - name: Apply OpenLDAP Secrets
+      command: >
+        helm install openldapsecrets ../openldap
+        --set openldapconfig.password='{{ openldapconfigpassword }}'
+        --set openldapadmin.password='{{ openldapadminpassword }}'
+
+    - name: Apply OpenLDAP chart
+      command: helm install openldap stable/openldap -f ../openldap-vault.yaml
+
+    - name: Add LDAP Users
+      command: echo "Run your slapd script offline for now."

@@ -1,0 +1,12 @@
+# You would run this on the Kubernetes Raspberry Pi Control Plane
+# Important: Run this first!
+
+- name: Reset OpenLDAP
+  hosts: controlplane
+  tasks:
+    - name: Helm Uninstall OpenLDAP
+      command: helm uninstall openldap
+
+    - name: Uninstall LDAP Secrets
+      command: helm uninstall openldapsecrets
+

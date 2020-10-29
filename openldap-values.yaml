@@ -30,8 +30,8 @@ tls:
   enabled: true
   secret: "site-cert"  # The name of a kubernetes.io/tls type secret to use for TLS
   CA:
-    enabled: false
-    secret: ""  # The name of a generic secret to use for custom CA certificate (ca.crt)
+    enabled: true
+    secret: "site-ca"  # The name of a generic secret to use for custom CA certificate (ca.crt)
 ## Add additional labels to all resources
 extraLabels: {}
 ## Add additional annotations to pods
@@ -56,7 +56,7 @@ env:
   LDAP_ORGANISATION: "Voight Household"
   LDAP_DOMAIN: "voight.org"
   LDAP_BACKEND: "true"
-  LDAP_TLS: "false"
+  LDAP_TLS: "true"
   LDAP_TLS_ENFORCE: "false"
   LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
   KEEP_EXISTING_CONFIG: "true"
@@ -68,56 +68,7 @@ env:
     # configPassword: config
 
     # Custom openldap configuration files used to override default settings
-customLdifFiles:
-  01-default-users.ldif: |-
-    dn: ou=people,dc=voight,dc=org
-    ou: people
-    gidnumber: 500
-    objectclass: posixGroup
-    objectclass: top
-
-    dn: ou=administrators,dc=voight,dc=org
-    objectclass: organizationalUnit
-    objectclass: top
-    ou: administrators
-
-    dn: ou=devops,dc=voight,dc=org
-    objectclass: organizationalUnit
-    objectclass: top
-    ou: devops
-
-    dn: cn=Adam Voight,dc=voight,dc=org
-    cn: Adam Voight
-    gidnumber: 500
-    givenname: Adam
-    homedirectory: /home/users/adam
-    loginshell: /bin/bash
-    mail: adam@voight.org
-    objectclass: inetOrgPerson
-    objectclass: posixAccount
-    objectclass: top
-    ou: people
-    sn: Voight
-    uid: adam
-    uidnumber: 3001
-    userpassword: { SSHA }vLjDkO3G4eUT4sqY97v+gMe6/IDO+e+y
-
-    dn: cn=Jeff Voight,dc=voight,dc=org
-    cn: Jeff Voight
-    gidnumber: 500
-    givenname: Jeff
-    homedirectory: /home/users/jeff
-    loginshell: /bin/bash
-    mail: jeff@voight.org
-    objectclass: inetOrgPerson
-    objectclass: posixAccount
-    objectclass: top
-    ou: people
-    sn: Voight
-    uid: jeff
-    uidnumber: 1000
-    userpassword: { SSHA }4mozWbnFHR5FzM2qJGYQ6HTPYpZSVpBu
-
+customLdifFiles: {}
 
 ## Persist data to a persistent volume
 persistence:
@@ -156,10 +107,9 @@ tolerations: []
 
 affinity:
   nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 2
-        preference:
-          matchExpressions:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
             - key: kubernetes.io/arch
               operator: In
               values:
