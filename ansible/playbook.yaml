@@ -5,6 +5,8 @@
   hosts: controlplane
   vars_files:
     - files/openldap-vault.yaml
+  var:
+    namespace: authentication
 
   tasks:
     - name: Install Stable repos
@@ -22,7 +24,7 @@
         --set openldapadmin.password='{{ openldapadminpassword }}'
 
     - name: Apply OpenLDAP chart
-      command: helm install openldap stable/openldap -f ../openldap-vault.yaml
+      command: helm install -n {{ namespace }} openldap stable/openldap -f ../openldap-vault.yaml
 
     - name: Add LDAP Users
       command: echo "Run your slapd script offline for now."
