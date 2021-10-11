@@ -3,10 +3,16 @@
 
 - name: Reset OpenLDAP
   hosts: controlplane
+  vars:
+    namespace: authentication
+
   tasks:
     - name: Helm Uninstall OpenLDAP
-      command: helm uninstall openldap
+      command: helm uninstall -n {{ namespace }} openldap
 
     - name: Uninstall LDAP Secrets
-      command: helm uninstall openldapsecrets
+      command: helm uninstall -n {{ namespace }} openldapsecrets
+
+    - name: Uninstall LDAP Certificates
+      command: helm uninstall -n {{ namespace }} ldapcertificates
 
