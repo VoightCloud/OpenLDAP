@@ -3,7 +3,7 @@
   connection: local
 
   vars:
-    namespace: authentication
+    namespace: build
 
   roles:
     - openldap

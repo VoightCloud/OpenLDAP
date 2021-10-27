@@ -1,4 +1,5 @@
-namespace: build
+namespace: authentication
+
 deployment: openldap
 
 openldapconfigpassword: !vault |
