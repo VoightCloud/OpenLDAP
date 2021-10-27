@@ -15,4 +15,4 @@ metadata:
   namespace: {{ .Values.namespace }}
 type: Opaque
 data:
-  ca.crt: {{ .Values.ca.crt | b64enc }}
+  ca.crt: {{ .Values.tls.ca | b64enc }}
