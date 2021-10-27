@@ -1,7 +1,6 @@
 GString label = "docker-openldap${UUID.randomUUID().toString()}"
 
 stage('Build') {
-
     podTemplate(
             label: label,
             serviceAccount: "jenkins-build",
@@ -27,19 +26,13 @@ stage('Build') {
                         branches         : scm.branches,
                         extensions       : scm.extensions
                 ])
-
-                // used to create the Docker image
-                env.GIT_BRANCH = scmVars.GIT_BRANCH
-                env.GIT_COMMIT = scmVars.GIT_COMMIT
             }
             stage('Push') {
                 container('ansible') {
                     withCredentials([string(credentialsId: 'ansible-vault-pwd', variable: 'ansiblevaultpwd')]) {
-                        withCredentials([file(credentialsId: 'kubeconfig', variable: 'MY_KUBECONFIG')]) {
-                            sh "sh -c 'echo ${ansiblevaultpwd} > vaultpwd'"
-                            sh "ansible-playbook --vault-password-file=./vaultpwd ./playbook.yaml"
-                            sh "rm vaultpwd"
-                        }
+                        sh "sh -c 'echo ${ansiblevaultpwd} > vaultpwd'"
+                        sh "ansible-playbook --vault-password-file=./vaultpwd ./playbook.yaml"
+                        sh "rm vaultpwd"
                     }
                 }
             }
