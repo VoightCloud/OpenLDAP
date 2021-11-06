@@ -1,3 +1,6 @@
+- name: Install Openshift Python Library
+  command: pip3 install openshift
+
 - name: Install Stable repos
   community.kubernetes.helm_repository:
     name: stable
@@ -16,8 +19,8 @@
 
 - name: Add Voight.org Certificates
   kubernetes.core.helm:
-    name: "{{ deployment }}-certificates"
-    chart_ref: ./roles/openldap/files/global
+    name: "{{ namespace }}-certificates"
+    chart_ref: ./roles/openldap/files/certificates
     release_namespace: "{{ namespace }}"
     release_values:
       namespace: "{{ namespace }}"
@@ -25,10 +28,26 @@
         key: "{{ voightorgkey }}"
         crt: "{{ voightorgcrt }}"
         ca: "{{ voightorgca }}"
+
+- name: Add OpenLDAP Secrets
+  kubernetes.core.helm:
+    name: "{{ deployment }}-secrets"
+    chart_ref: ./roles/openldap/files/secrets
+    release_namespace: "{{ namespace }}"
+    release_values:
+      namespace: "{{ namespace }}"
       openldapconfig:
         password: "{{ openldapconfigpassword }}"
       openldapadmin:
         password: "{{ openldapadminpassword }}"
+
+- name: Add OpenLDAP Persistence
+  kubernetes.core.helm:
+    name: "{{ namespace }}-persistence"
+    chart_ref: ./roles/openldap/files/persistence
+    release_namespace: "{{ namespace }}"
+    release_values:
+      namespace: "{{ namespace }}"
 
 - name: Apply OpenLDAP
   kubernetes.core.helm:
@@ -41,11 +60,11 @@
       tls:
         enabled: true
         secret: "site-cert"
-      CA:
-        enabled: true
-        secret: "site-ca"
+        CA:
+          enabled: true
+          secret: "site-ca"
       service:
-        loadBalancerIP: 192.168.137.82
+        loadBalancerIP: 192.168.137.77
         type: LoadBalancer
       env:
         LDAP_ORGANISATION: "Voight Household"
@@ -53,13 +72,6 @@
         LDAP_BACKEND: "true"
       persistence:
         enabled: true
-        existingClaim: "openldap-pvc"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/arch
-                    operator: In
-                    values:
-                      - amd64
+        existingClaim: "ldap-pvc"
+      logLevel: info
+
