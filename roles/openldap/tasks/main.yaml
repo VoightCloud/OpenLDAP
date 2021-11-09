@@ -69,7 +69,7 @@
       env:
         LDAP_ORGANISATION: "Voight Household"
         LDAP_DOMAIN: "voight.org"
-        LDAP_BACKEND: "true"
+        LDAP_BACKEND: "mdb"
       persistence:
         enabled: true
         existingClaim: "ldap-pvc"
