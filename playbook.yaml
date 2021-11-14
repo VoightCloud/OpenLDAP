@@ -1,0 +1,9 @@
+- name: Install OpenLDAP
+  hosts: localhost
+  connection: local
+
+  vars:
+    namespace: authentication
+
+  roles:
+    - openldap
