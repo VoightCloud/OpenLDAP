@@ -75,5 +75,5 @@
         enabled: true
         existingClaim: "ldap-pvc"
       existingSecret: "openldap-credentials"
-      logLevel: info
+      logLevel: warning
 
